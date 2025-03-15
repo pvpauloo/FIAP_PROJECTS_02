@@ -58,6 +58,8 @@ def scrape_b3_selenium():
     # Adiciona uma coluna com a data de extração
     df["data_extracao"] = datetime.today().strftime('%Y-%m-%d')
     df.columns = [unidecode(col).strip().replace(" ", "_").replace(".","").replace("(%)","perc") for col in df.columns]
+    df["Qtde_Teorica"] = df["Qtde_Teorica"].str.replace(".", "")
+    df['Part_perc'] = df['Part_perc'].apply(lambda x: f"{x / 1000:.3f}")
 
     return df
 
@@ -83,6 +85,28 @@ def save_parquet_to_s3(df, bucket_name, base_folder):
     s3.put_object(Bucket=bucket_name, Key=file_name, Body=buffer.getvalue())
 
     print(f"Arquivo salvo com sucesso no S3: s3://{bucket_name}/{file_name}")
+
+
+def save_parquet_to_s3_with_path(df, bucket_name, base_folder, date):
+    
+    s3_folder = f"{base_folder}/{date}/"
+
+    # Converte o DataFrame para um formato Parquet
+    table = pa.Table.from_pandas(df)
+
+    # Salva o arquivo em um buffer de memória
+    buffer = BytesIO()
+    pq.write_table(table, buffer)
+    buffer.seek(0)
+
+    # Nome do arquivo Parquet a ser salvo no S3
+    file_name = f"{s3_folder}dados_ibov.parquet"
+
+    # Faz o upload para o S3
+    s3.put_object(Bucket=bucket_name, Key=file_name, Body=buffer.getvalue())
+
+    print(f"Arquivo salvo com sucesso no S3: s3://{bucket_name}/{file_name}")
+
 
 if __name__ == "__main__":
     # Faz o scraping usando Selenium
