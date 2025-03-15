@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 from io import BytesIO
+from unidecode import unidecode
 
 # Configurar boto3 para acessar o S3
 s3 = boto3.client('s3')
@@ -56,6 +57,7 @@ def scrape_b3_selenium():
 
     # Adiciona uma coluna com a data de extração
     df["data_extracao"] = datetime.today().strftime('%Y-%m-%d')
+    df.columns = [unidecode(col).strip().replace(" ", "_").replace(".","").replace("(%)","perc") for col in df.columns]
 
     return df
 
