@@ -2,7 +2,7 @@ import boto3
 import pandas as pd
 import pyarrow.parquet as pq
 import io
-from getDataB3 import save_parquet_to_s3_with_path
+
 
 
 # Configurar boto3 para acessar o S3
@@ -10,7 +10,7 @@ s3 = boto3.client('s3')
 # Nome do bucket e caminho do arquivo
 BUCKET_NAME = "challenge-fiap-02-pks"
 FOLDER_NAME = "b3-data"
-DATE_PARTITION = "2025-03-10"  # Mudar para a data do arquivo que quer visualizar
+DATE_PARTITION = "2025-03-22"  # Mudar para a data do arquivo que quer visualizar
 BASE_FOLDER = "b3-data"
 FILE_NAME = f"{FOLDER_NAME}/{DATE_PARTITION}/dados_ibov.parquet"
 
@@ -41,5 +41,5 @@ DATE_PARTITION = "2025-03-10"
 save_parquet_to_s3_with_path(df, BUCKET_NAME, BASE_FOLDER, DATE_PARTITION)
 """
 
-print(df.head(10))
+print(df.head(100))
 
